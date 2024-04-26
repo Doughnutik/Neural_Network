@@ -14,6 +14,12 @@ Vector Sigmoida::operator()(const Vector& vec, bool is_derivative = false) {
     return new_vec;
 }
 
+double Sigmoida::operator()(double v, bool is_derivative = false) {
+    auto f{ [](double x) -> double {return 1 / (1 + exp(-x));}};
+    if (is_derivative) return f(v) * (1 - f(v));
+    return f(v);
+}
+
 double ReLU_func(double x, bool is_derivative = false) {
     const double alpha = 1e-2; // можно менять
     if (!is_derivative) {
@@ -38,6 +44,10 @@ Vector ReLU::operator()(const Vector& vec, bool is_derivative = false) {
     return new_vec;
 }
 
+double ReLU::operator()(double v, bool is_derivative = false) {
+    return ReLU_func(v, is_derivative);
+}
+
 double Th_func(double x, bool is_derivative = false) {
     const double alpha = 1e-2; // можно менять
     auto f{ [](double x) -> double {return (exp(x) - exp(-x)) / (exp(x) + exp(-x));}};
@@ -60,4 +70,8 @@ Vector Th::operator()(const Vector& vec, bool is_derivative = false) {
         }
     }
     return new_vec;
+}
+
+double Th::operator()(double v, bool is_derivative = false) {
+    return Th_func(v, is_derivative);
 }

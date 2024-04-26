@@ -20,9 +20,6 @@ void WriteImages(std::ifstream& in, std::ofstream& out) {
             for (size_t j = 0; j < cols; ++j) {
                 uint8_t byte;
                 in >> byte;
-                // if (byte) {
-                //     byte = 11;
-                // }
                 out << static_cast<double>(byte) / 255 << " ";
             }
             out << "\n";

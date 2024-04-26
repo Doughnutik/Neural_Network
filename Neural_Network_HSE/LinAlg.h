@@ -34,15 +34,16 @@ public:
 
     double operator * (const Vector& other) const;
 
-    Vector Derivative();
-
     std::pair<int, double> FindMax();
+
+    friend std::ostream& operator << (std::ostream& os, const Vector& vec);
+    friend std::istream& operator >> (std::istream& is, Vector& vec);
 
 private:
     size_t size_ = 0;
     std::vector<double> vec_;
 };
-
+ 
 class Matrix {
 public:
     Matrix() = default;
@@ -77,7 +78,10 @@ public:
 
     Vector operator * (const Vector& other) const;
 
-    Matrix Derivative();
+    Matrix T() const;
+
+    friend std::ostream& operator << (std::ostream& os, const Matrix& vec);
+    friend std::istream& operator >> (std::istream& is, Matrix& vec);
 private:
     std::vector<Vector> matrix_;
     size_t rows_ = 0, cols_ = 0;

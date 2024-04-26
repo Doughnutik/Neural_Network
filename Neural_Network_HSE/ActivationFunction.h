@@ -11,6 +11,8 @@ public:
 
     Vector operator()(const Vector& vec, bool is_derivative = false);
 
+    double operator()(double v, bool is_derivative = false);
+
 private:
     act_func func_;
 };

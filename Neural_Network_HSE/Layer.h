@@ -5,12 +5,14 @@
 class Layer {
 public:
 
-void Init(size_t rows, size_t cols, const ActivationFunction& func);
+    Layer() = default;
 
-friend Network;
+    void Init(size_t rows, size_t cols, const ActivationFunction& func);
+
+    friend Network;
 
 private:
-    Matrix a_;
+    Matrix a_, aT_;
     Vector b_;
     ActivationFunction act_func_;
 };

@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <random>
 #include <algorithm>
+#include <fstream>
 
 std::normal_distribution<double> distribution(1, 0); 
 std::mt19937 gen(43);
@@ -179,4 +180,43 @@ Vector Matrix::operator * (const Vector& other) const {
         new_vector[i] = matrix_[i] * other;
     }
     return new_vector;
+}
+
+Matrix Matrix::T() const {
+    Matrix new_matrix(cols_, rows_);
+    for (size_t i = 0; i < cols_; ++i){
+        for (size_t j = 0; j < rows_; ++j) {
+            new_matrix[i][j] = matrix_[j][i];
+        }
+    }
+    return new_matrix;
+}
+
+std::ostream& operator << (std::ostream& os, const Vector& vec) {
+    for (size_t i = 0; i < vec.size_; ++i) os << vec.vec_[i] << " ";
+    return os;
+}
+
+std::istream& operator >> (std::istream& is, Vector& vec) {
+    for (size_t i = 0; i < vec.size_; ++i) is >> vec.vec_[i];
+    return is;
+}
+
+std::ostream& operator << (std::ostream& os, const Matrix& mat) {
+    for (size_t i = 0; i < mat.rows_; ++i) {
+        for (size_t j = 0; j < mat.cols_; ++j) {
+            os << mat[i][j] << " ";
+        }
+        os << "\n";
+    }
+    return os;
+}
+
+std::istream& operator >> (std::istream& is, Matrix& mat) {
+     for (size_t i = 0; i < mat.rows_; ++i) {
+        for (size_t j = 0; j < mat.cols_; ++j) {
+            is >> mat[i][j];
+        }
+    }
+    return is;
 }
