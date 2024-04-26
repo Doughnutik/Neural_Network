@@ -1,14 +1,16 @@
+#pragma once
 #include "ActivationFunction.h"
+#include "LinAlg.h"
 
 class Layer {
-
 public:
-    Layer();
 
-    
+void Init(size_t rows, size_t cols, const ActivationFunction& func);
+
+friend Network;
 
 private:
-    std::vector<std::vector<int>> a_;
-    std::vector<int> b_;
-    ActivationFunction activ_func_;
+    Matrix a_;
+    Vector b_;
+    ActivationFunction act_func_;
 };

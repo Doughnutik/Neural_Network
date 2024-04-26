@@ -4,6 +4,10 @@
 class Vector {
 public:
 
+    Vector() = default;
+
+    Vector(const std::vector<double>& vec);
+
     Vector(size_t size);
 
     void Init(size_t size);
@@ -32,13 +36,19 @@ public:
 
     Vector Derivative();
 
+    std::pair<int, double> FindMax();
+
 private:
-    size_t size_;
+    size_t size_ = 0;
     std::vector<double> vec_;
 };
 
 class Matrix {
 public:
+    Matrix() = default;
+
+    Matrix(const std::vector<std::vector<double>>& mat);
+
     Matrix(size_t rows, size_t cols);
 
     void Init(size_t rows, size_t cols);
@@ -70,5 +80,5 @@ public:
     Matrix Derivative();
 private:
     std::vector<Vector> matrix_;
-    size_t rows_, cols_;
+    size_t rows_ = 0, cols_ = 0;
 };

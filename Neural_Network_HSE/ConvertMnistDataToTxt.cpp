@@ -23,7 +23,7 @@ void WriteImages(std::ifstream& in, std::ofstream& out) {
                 // if (byte) {
                 //     byte = 11;
                 // }
-                out << static_cast<int>(byte) << " ";
+                out << static_cast<double>(byte) / 255 << " ";
             }
             out << "\n";
         }
@@ -36,7 +36,6 @@ void WriteImages(std::ifstream& in, std::ofstream& out) {
 void WriteLabels(std::ifstream& in, std::ofstream& out) {
     int magic = ReadInt(in);
     size_t n = ReadInt(in);
-    //std::cerr << magic << " " << n << "\n";
     out << n << "\n";
     for (size_t i = 0; i < n; ++i) {
         uint8_t byte;

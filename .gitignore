@@ -221,5 +221,8 @@ main
 .vscode
 code/
 *.gz
-Mnist/*.txt
+Mnist
+*.txt
 conv
+main.cpp
+a.out
