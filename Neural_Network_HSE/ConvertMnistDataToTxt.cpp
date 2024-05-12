@@ -1,7 +1,7 @@
-#include <iostream>
 #include <fstream>
+#include <iostream>
 
-int ReadInt(std::ifstream& in) {
+int ReadInt(std::ifstream &in) {
     uint8_t byte;
     int res = 0;
     for (size_t i = 0; i < 4; ++i) {
@@ -11,7 +11,7 @@ int ReadInt(std::ifstream& in) {
     return res;
 }
 
-void WriteImages(std::ifstream& in, std::ofstream& out) {
+void WriteImages(std::ifstream &in, std::ofstream &out) {
     int magic = ReadInt(in);
     size_t n = ReadInt(in), rows = ReadInt(in), cols = ReadInt(in);
     out << n << " " << rows << " " << cols << "\n";
@@ -30,7 +30,7 @@ void WriteImages(std::ifstream& in, std::ofstream& out) {
     out.close();
 }
 
-void WriteLabels(std::ifstream& in, std::ofstream& out) {
+void WriteLabels(std::ifstream &in, std::ofstream &out) {
     int magic = ReadInt(in);
     size_t n = ReadInt(in);
     out << n << "\n";
@@ -43,7 +43,7 @@ void WriteLabels(std::ifstream& in, std::ofstream& out) {
     out.close();
 }
 
-int main(int argc, char* argv[]) {
+int main(int argc, char *argv[]) {
     for (int i = 1; i < argc; i += 2) {
         if (strcmp(argv[i], "-i") && strcmp(argv[i], "-l")) {
             std::cout << "Неверный аргумент " << argv[i] << "\n";
@@ -66,8 +66,7 @@ int main(int argc, char* argv[]) {
         }
         if (!strcmp(argv[i], "-i")) {
             WriteImages(in, out);
-        }
-        else {
+        } else {
             WriteLabels(in, out);
         }
     }

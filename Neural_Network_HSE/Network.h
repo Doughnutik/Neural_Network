@@ -2,29 +2,29 @@
 #include "Layer.h"
 
 class Network {
-public:
+  public:
+    void Init(size_t num_layers, const std::vector<int> num_neurons,
+              const ActivationFunction &act_func, double rate);
 
-void Init(size_t num_layers, const std::vector<int> num_neurons, const ActivationFunction& act_func, double rate);
+    void PrintData();
 
-void PrintData();
+    void LoadData(const std::vector<double> &vec);
 
-void LoadData(const std::vector<double>& vec);
+    int Propagate();
 
-int Propagate();
+    int Search(const Vector &vec);
 
-int Search(const Vector& vec);
+    void PrintValues(size_t id);
 
-void PrintValues(size_t id);
+    void BackPropagate(int expect);
 
-void BackPropagate(int expect);
+    void WeightUpdate();
 
-void WeightUpdate();
+    void SaveData();
 
-void SaveData();
+    void ReadData();
 
-void ReadData();
-
-private:
+  private:
     size_t num_layers_;
     std::vector<int> num_neurons_;
     std::vector<Layer> layers_;

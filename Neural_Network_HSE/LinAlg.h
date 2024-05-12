@@ -2,11 +2,10 @@
 #include <vector>
 
 class Vector {
-public:
-
+  public:
     Vector() = default;
 
-    Vector(const std::vector<double>& vec);
+    Vector(const std::vector<double> &vec);
 
     Vector(size_t size);
 
@@ -16,39 +15,39 @@ public:
 
     size_t Size() const;
 
-    double& operator[](size_t ind);
+    double &operator[](size_t ind);
 
     double operator[](size_t ind) const;
 
-    void operator += (const Vector& other);
+    void operator+=(const Vector &other);
 
-    Vector operator + (const Vector& other) const;
+    Vector operator+(const Vector &other) const;
 
-    void operator -= (const Vector& other);
+    void operator-=(const Vector &other);
 
-    Vector operator - (const Vector& other) const;
+    Vector operator-(const Vector &other) const;
 
-    void operator *= (double value);
+    void operator*=(double value);
 
-    Vector operator * (double value) const;
+    Vector operator*(double value) const;
 
-    double operator * (const Vector& other) const;
+    double operator*(const Vector &other) const;
 
     std::pair<int, double> FindMax();
 
-    friend std::ostream& operator << (std::ostream& os, const Vector& vec);
-    friend std::istream& operator >> (std::istream& is, Vector& vec);
+    friend std::ostream &operator<<(std::ostream &os, const Vector &vec);
+    friend std::istream &operator>>(std::istream &is, Vector &vec);
 
-private:
+  private:
     size_t size_ = 0;
     std::vector<double> vec_;
 };
- 
+
 class Matrix {
-public:
+  public:
     Matrix() = default;
 
-    Matrix(const std::vector<std::vector<double>>& mat);
+    Matrix(const std::vector<std::vector<double>> &mat);
 
     Matrix(size_t rows, size_t cols);
 
@@ -60,29 +59,30 @@ public:
 
     size_t GetCols() const;
 
-    Vector& operator[](size_t ind);
+    Vector &operator[](size_t ind);
 
-    const Vector& operator[](size_t ind) const;
+    const Vector &operator[](size_t ind) const;
 
-    void operator += (const Matrix& other);
+    void operator+=(const Matrix &other);
 
-    Matrix operator + (const Matrix& other) const;
+    Matrix operator+(const Matrix &other) const;
 
-    void operator -= (const Matrix& other);
+    void operator-=(const Matrix &other);
 
-    Matrix operator - (const Matrix& other) const;
+    Matrix operator-(const Matrix &other) const;
 
-    void operator *= (double value);
+    void operator*=(double value);
 
-    Matrix operator * (double value) const;
+    Matrix operator*(double value) const;
 
-    Vector operator * (const Vector& other) const;
+    Vector operator*(const Vector &other) const;
 
     Matrix T() const;
 
-    friend std::ostream& operator << (std::ostream& os, const Matrix& vec);
-    friend std::istream& operator >> (std::istream& is, Matrix& vec);
-private:
+    friend std::ostream &operator<<(std::ostream &os, const Matrix &vec);
+    friend std::istream &operator>>(std::istream &is, Matrix &vec);
+
+  private:
     std::vector<Vector> matrix_;
     size_t rows_ = 0, cols_ = 0;
 };
