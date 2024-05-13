@@ -79,8 +79,8 @@ class Matrix {
 
     Matrix T() const;
 
-    friend std::ostream &operator<<(std::ostream &os, const Matrix &vec);
-    friend std::istream &operator>>(std::istream &is, Matrix &vec);
+    friend std::ostream &operator<<(std::ostream &os, const Matrix &mat);
+    friend std::istream &operator>>(std::istream &is, Matrix &mat);
 
   private:
     std::vector<Vector> matrix_;

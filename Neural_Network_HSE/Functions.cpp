@@ -1,82 +1,75 @@
 #include "Functions.h"
 
-Vector Sigmoida::operator()(const Vector &vec, bool is_derivative = false) {
+Vector SigmoidaFunc(const Vector &vec) {
     auto f{[](double x) -> double { return 1 / (1 + exp(-x)); }};
     Vector new_vec = vec;
     for (size_t i = 0; i < vec.Size(); ++i) {
-        if (!is_derivative) {
-            new_vec[i] = f(new_vec[i]);
-        } else {
-            new_vec[i] = f(new_vec[i]) * (1 - f(new_vec[i]));
-        }
+        new_vec[i] = f(new_vec[i]);
     }
     return new_vec;
 }
 
-double Sigmoida::operator()(double v, bool is_derivative = false) {
+Vector SigmoidaDer(const Vector &vec) {
     auto f{[](double x) -> double { return 1 / (1 + exp(-x)); }};
-    if (is_derivative)
-        return f(v) * (1 - f(v));
-    return f(v);
+    Vector new_vec = vec;
+    for (size_t i = 0; i < vec.Size(); ++i) {
+        new_vec[i] = f(new_vec[i]) * (1 - f(new_vec[i]));
+    }
+    return new_vec;
 }
 
-double ReLU_func(double x, bool is_derivative = false) {
+Vector ReluFunc(const Vector &vec) {
     const double alpha = 1e-2; // можно менять
-    if (!is_derivative) {
-        if (x < 0)
-            return alpha * x;
-        if (x > 1)
-            return 1 + alpha * (x - 1);
-        return x;
-    }
-    if (x < 0 or x > 1)
-        return alpha;
-    return 1;
-}
-
-Vector ReLU::operator()(const Vector &vec, bool is_derivative = false) {
     Vector new_vec = vec;
     for (size_t i = 0; i < vec.Size(); ++i) {
-        if (!is_derivative) {
-            new_vec[i] = ReLU_func(new_vec[i]);
-        } else {
-            new_vec[i] = ReLU_func(new_vec[i], true);
-        }
+        if (new_vec[i] < 0) {
+            new_vec[i] *= alpha;
+        } else if (new_vec[i] > 1)
+            new_vec[i] = 1 + alpha * (new_vec[i] - 1);
     }
     return new_vec;
 }
 
-double ReLU::operator()(double v, bool is_derivative = false) {
-    return ReLU_func(v, is_derivative);
+Vector ReluDer(const Vector &vec) {
+    const double alpha = 1e-2; // можно менять
+    Vector new_vec = vec;
+    for (size_t i = 0; i < vec.Size(); ++i) {
+        if (new_vec[i] < 0 or new_vec[i] > 1) {
+            new_vec[i] = alpha;
+        } else
+            new_vec[i] = 1;
+    }
+    return new_vec;
 }
 
-double Th_func(double x, bool is_derivative = false) {
+Vector ThFunc(const Vector &vec) {
     const double alpha = 1e-2; // можно менять
     auto f{[](double x) -> double {
         return (exp(x) - exp(-x)) / (exp(x) + exp(-x));
     }};
-    if (!is_derivative) {
-        if (x < 0)
-            return alpha * f(x);
-        return f(x);
-    }
-    if (x < 0)
-        return alpha * (1 - f(x) * f(x));
-    return 1 - f(x) * f(x);
-}
-
-Vector Th::operator()(const Vector &vec, bool is_derivative = false) {
     Vector new_vec = vec;
     for (size_t i = 0; i < vec.Size(); ++i) {
-        if (!is_derivative) {
-            new_vec[i] = Th_func(new_vec[i]);
+        if (new_vec[i] < 0) {
+            new_vec[i] = alpha * f(new_vec[i]);
         } else {
-            new_vec[i] = Th_func(new_vec[i], true);
+            new_vec[i] = f(new_vec[i]);
         }
     }
     return new_vec;
 }
 
-double Th::operator()(double v, bool is_derivative = false) {
-    return Th_func(v, is_derivative);
+Vector ThDer(const Vector &vec) {
+    const double alpha = 1e-2; // можно менять
+    auto f{[](double x) -> double {
+        return (exp(x) - exp(-x)) / (exp(x) + exp(-x));
+    }};
+    Vector new_vec = vec;
+    for (size_t i = 0; i < vec.Size(); ++i) {
+        if (new_vec[i] < 0) {
+            new_vec[i] = alpha * (1 - f(new_vec[i]) * f(new_vec[i]));
+        } else {
+            new_vec[i] = 1 - f(new_vec[i]) * f(new_vec[i]);
+        }
+    }
+    return new_vec;
 }

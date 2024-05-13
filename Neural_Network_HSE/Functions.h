@@ -1,23 +1,15 @@
 #pragma once
 #include "LinAlg.h"
+#include <functional>
 
-class Sigmoida {
-  public:
-    Vector operator()(const Vector &vec, bool is_derivative = false);
+using function = std::function<Vector(const Vector &)>;
+using derivative = std::function<Vector(const Vector &)>;
 
-    double operator()(double v, bool is_derivative = false);
-};
+function sigmoida_func;
+derivative sigmoida_der;
 
-class ReLU {
-  public:
-    Vector operator()(const Vector &vec, bool is_derivative = false);
+function relu_func;
+derivative rule_der;
 
-    double operator()(double v, bool is_derivative = false);
-};
-
-class Th {
-  public:
-    Vector operator()(const Vector &vec, bool is_derivative = false);
-
-    double operator()(double v, bool is_derivative = false);
-};
+function th_func;
+derivative th_der;

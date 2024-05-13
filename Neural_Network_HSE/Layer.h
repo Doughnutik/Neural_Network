@@ -1,5 +1,5 @@
 #pragma once
-#include "ActivationFunction.h"
+#include "Functions.h"
 #include "LinAlg.h"
 
 class Layer {
@@ -13,5 +13,6 @@ class Layer {
   private:
     Matrix a_, aT_;
     Vector b_;
-    ActivationFunction act_func_;
+    std::unique_ptr<ActivationFunction>
+        act_func; // = std::make_unique<Derived>();
 };

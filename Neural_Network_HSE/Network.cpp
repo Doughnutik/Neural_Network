@@ -108,9 +108,7 @@ void Network::SaveData() {
     }
 
     for (int i = 0; i < num_layers_ - 1; ++i) {
-        for (int j = 0; j < num_neurons_[i + 1]; ++j) {
-            fout << layers_[i].b_[j] << "\n";
-        }
+        fout << layers_[i].b_ << "\n";
     }
     std::cout << "Weights saved \n";
     fout.close();
