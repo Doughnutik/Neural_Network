@@ -4,27 +4,29 @@
 #include <iostream>
 
 void Network::Init(size_t num_layers, const std::vector<int> num_neurons,
-                   const ActivationFunction &act_func, double rate) {
+                   const function& func, const derivative& der, const std::string& func_name, double rate) {
     num_layers_ = num_layers;
     num_neurons_ = num_neurons;
     layers_.resize(num_layers - 1, Layer());
     for (int i = 0; i < num_layers - 1; ++i) {
-        layers_[i].Init(num_neurons[i + 1], num_neurons[i], act_func);
+        layers_[i].Init(num_neurons[i + 1], num_neurons[i]);
     }
-    int a = 100;
 
     neurons_values_.resize(num_layers, Vector());
-    neurons_errors_.resize(num_layers, Vector());
+    neurons_deltas_.resize(num_layers, Vector());
 
     for (int i = 0; i < num_layers; ++i) {
         neurons_values_[i].Init(num_neurons[i]);
-        neurons_errors_[i].Init(num_neurons[i]);
+        neurons_deltas_[i].Init(num_neurons[i]);
     }
 
     learning_rate_ = rate;
+    func_ = func;
+    der_ = der;
+    func_name_ = func_name;
 }
 
-void Network::PrintData() {
+void Network::PrintData() {  // вывести количество нейронов на каждом слое
     std::cout << "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n";
     std::cout << num_layers_ << "слоёв нейросети\n";
     for (size_t i = 0; i < num_layers_; ++i) {
@@ -33,7 +35,7 @@ void Network::PrintData() {
     std::cout << "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n";
 }
 
-void Network::PrintValues(size_t id) {
+void Network::PrintValues(size_t id) {  // вывести значения нейронов на слое id
     std::cout << "$$$   Values   $$$\n";
     for (size_t i = 0; i < num_neurons_[id]; ++i) {
         std::cout << i << " " << neurons_values_[id][i] << "\n";
@@ -42,18 +44,18 @@ void Network::PrintValues(size_t id) {
 }
 
 void Network::LoadData(const std::vector<double> &vec) {
-    neurons_values_[0] = Vector(vec);
+    neurons_values_[0] = Vector(vec);  // загрузка первого слоя нейронов как картинки 28x28 в виде вектора из 784 даблов
 }
 
-int Network::Propagate() {
+int Network::Propagate() {  // функция прямого распространения
     for (size_t i = 1; i < num_layers_; ++i) {
         Vector res =
-            (layers_[i - 1].a_ * neurons_values_[i - 1]) + layers_[i - 1].b_;
-        res = layers_[i - 1].act_func_(res);
-        neurons_values_[i] = res;
+            (layers_[i - 1].GetWeights() * neurons_values_[i - 1]) + layers_[i - 1].GetBias();  // Ax + b
+        res = func_(res);  // func(x)
+        neurons_values_[i] = res;  // вычислили значения нейронов на новом слое.
     }
-    std::pair<int, double> p = neurons_values_[num_layers_ - 1].FindMax();
-    return p.first;
+    std::pair<int, double> p = neurons_values_[num_layers_ - 1].FindMax();  // нашли предсказанную цифру и значение нейрона в этой цифре.
+    return p.first;  // вернули предсказанную цифру.
 }
 
 void Network::BackPropagate(int expect) {
@@ -96,39 +98,50 @@ void Network::WeightUpdate() {
     }
 }
 
-void Network::SaveData() {
+void Network::SaveData() {  // сохраняем значения нейросети в файл
     std::ofstream fout;
     fout.open("Data.txt");
     if (!fout.is_open()) {
         std::cout << "Error reading the file";
         system("pause");
     }
+    fout << num_layers_ << " " << learning_rate_ << "\n";  // сохраняем кол-во слоёв, скорость обучения
+    for (size_t i = 0; i < num_layers_; ++i) {
+        fout << num_neurons_[i] << " ";   // сохраняем количества нейронов
+    }
+    fout << "\n";
     for (int i = 0; i < num_layers_ - 1; ++i) {
-        fout << layers_[i].a_ << "\n";
+        fout << layers_[i].GetWeights() << "\n";  // сохраняем матрицы весов
     }
 
     for (int i = 0; i < num_layers_ - 1; ++i) {
-        fout << layers_[i].b_ << "\n";
+        fout << layers_[i].GetBias() << "\n";  // сохраняем вектора сдвигов
     }
+    fout << func_name_ << "\n";  // сохраняем название функции активации (sigmoida, relu, th, ...)
     std::cout << "Weights saved \n";
     fout.close();
 }
 
-void Network::ReadData() {
+void Network::ReadData() {  // читаем значения нейросети из файла
     std::ifstream fin;
     fin.open("Data.txt");
     if (!fin.is_open()) {
         std::cout << "Error reading the file";
         system("pause");
     }
-    for (int i = 0; i < num_layers_ - 1; ++i) {
-        fin >> layers_[i].a_;
+    fin >> num_layers_ >> learning_rate_;  // читаем кол-во слоёв, скорость обучения
+    for (size_t i = 0; i < num_layers_; ++i) {
+        fin >> num_neurons_[i];  // читаем количества нейронов
     }
     for (int i = 0; i < num_layers_ - 1; ++i) {
-        for (int j = 0; j < num_neurons_[i + 1]; ++j) {
-            fin >> layers_[i].b_[j];
-        }
+        fin >> layers_[i].ChangeWeights();  // читаем матрицы весов
     }
+    for (int i = 0; i < num_layers_ - 1; ++i) {
+        fin >> layers_[i].ChangeBias();  // читаем вектора сдвигов
+    }
+    fin >> func_name_;  // считываем название функции активации
+    func_ = func_names_map.at(func_name_).first;
+    der_ = func_names_map.at(func_name_).second;
     std::cout << "Weights readed \n";
     fin.close();
 }

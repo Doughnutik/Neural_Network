@@ -1,6 +1,6 @@
 #include "LinAlg.h"
 #include <algorithm>
-#include <assert.h>
+#include <cassert>
 #include <fstream>
 #include <random>
 
@@ -79,7 +79,7 @@ double Vector::operator*(const Vector &other) const {
     return res;
 }
 
-std::pair<int, double> Vector::FindMax() {
+std::pair<int, double> Vector::FindMax() const{
     size_t id = std::max_element(vec_.begin(), vec_.end()) - vec_.begin();
     return {id, vec_[id]};
 }
@@ -105,9 +105,9 @@ void Matrix::RandomFill() {
     }
 }
 
-size_t Matrix::GetRows() const { return rows_; }
+size_t Matrix::Rows() const { return rows_; }
 
-size_t Matrix::GetCols() const { return cols_; }
+size_t Matrix::Cols() const { return cols_; }
 
 void Matrix::operator+=(const Matrix &other) {
     assert(other.rows_ == rows_ && other.cols_ == cols_);

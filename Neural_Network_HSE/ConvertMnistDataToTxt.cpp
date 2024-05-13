@@ -13,7 +13,9 @@ int ReadInt(std::ifstream &in) {
 
 void WriteImages(std::ifstream &in, std::ofstream &out) {
     int magic = ReadInt(in);
-    size_t n = ReadInt(in), rows = ReadInt(in), cols = ReadInt(in);
+    size_t n = ReadInt(in);
+    size_t rows = ReadInt(in);
+    size_t cols = ReadInt(in);
     out << n << " " << rows << " " << cols << "\n";
     for (size_t i = 0; i < n; ++i) {
         for (size_t i = 0; i < rows; ++i) {

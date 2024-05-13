@@ -33,7 +33,7 @@ class Vector {
 
     double operator*(const Vector &other) const;
 
-    std::pair<int, double> FindMax();
+    std::pair<int, double> FindMax() const;
 
     friend std::ostream &operator<<(std::ostream &os, const Vector &vec);
     friend std::istream &operator>>(std::istream &is, Vector &vec);
@@ -55,9 +55,9 @@ class Matrix {
 
     void RandomFill();
 
-    size_t GetRows() const;
+    size_t Rows() const;
 
-    size_t GetCols() const;
+    size_t Cols() const;
 
     Vector &operator[](size_t ind);
 

@@ -1,15 +1,24 @@
 #pragma once
-#include "LinAlg.h"
+#include "Linalg.h"
 #include <functional>
 
 using function = std::function<Vector(const Vector &)>;
 using derivative = std::function<Vector(const Vector &)>;
 
-function sigmoida_func;
-derivative sigmoida_der;
+Vector SigmoidaFunc(const Vector &vec);
+Vector SigmoidaDer(const Vector &vec);
 
-function relu_func;
-derivative rule_der;
+Vector ReluFunc(const Vector &vec);
+Vector ReluDer(const Vector &vec);
 
-function th_func;
-derivative th_der;
+Vector ThFunc(const Vector &vec);
+Vector ThDer(const Vector &vec);
+
+function sigmoida_func = SigmoidaFunc;
+derivative sigmoida_der = SigmoidaDer;
+
+function relu_func = ReluFunc;
+derivative rule_der = ReluDer;
+
+function th_func = ThFunc;
+derivative th_der = ThDer;
