@@ -9,7 +9,7 @@ const std::map<std::string, std::pair<function, derivative>> func_names_map{
 class Network {
   public:
     void Init(size_t num_layers, const std::vector<int> num_neurons,
-              const function& func, const derivative& der, const std::string& func_name, double rate = 0.5);
+              const std::string& func_name, double rate);
 
     void PrintData();
 
@@ -25,15 +25,23 @@ class Network {
 
     void WeightUpdate();
 
-    void SaveData();
+    void SaveData(const std::string& filename);
 
-    void ReadData();
+    void ReadData(const std::string& filename);
+
+    void SaveConfig(const std::string& filename);
+
+    void ReadConfig(const std::string& filename);
+
+    void Train();
+
+    void Test();
 
   private:
     size_t num_layers_;
     std::vector<int> num_neurons_;
     std::vector<Layer> layers_;
-    std::vector<Vector> neurons_values_, neurons_deltas_;
+    std::vector<Vector> neurons_values_, neurons_errors_, sum_values_;
     function func_;
     derivative der_;
     std::string func_name_;
