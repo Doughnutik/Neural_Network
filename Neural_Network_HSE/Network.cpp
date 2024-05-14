@@ -211,3 +211,5 @@ void Network::SaveConfig(const std::string& filename) {
     std::cout << "Config saved\n";
     fout.close();
 }
+
+//TODO добавить learning rate в backpropagation
