@@ -224,5 +224,4 @@ code/
 Mnist
 *.txt
 conv
-main.cpp
 a.out

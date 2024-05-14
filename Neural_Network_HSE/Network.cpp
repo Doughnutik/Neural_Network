@@ -212,4 +212,12 @@ void Network::SaveConfig(const std::string& filename) {
     fout.close();
 }
 
+std::vector<int> Network::Train(const std::vector<DigitData>& digits) {
+
+}
+
+std::vector<int> Network::Test(const std::vector<DigitData>& digits) {
+    
+}
+
 //TODO добавить learning rate в backpropagation

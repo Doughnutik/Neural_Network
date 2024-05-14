@@ -6,6 +6,11 @@ const std::map<std::string, std::pair<function, derivative>> func_names_map{
   {"sigmoida", {SigmoidaFunc, SigmoidaDer}}, {"relu", {ReluFunc, ReluDer}}, {"th", {ThFunc, ThDer}}
 };
 
+struct DigitData {
+    std::vector<std::vector<double>> pixels;
+    int digit;
+};
+
 class Network {
   public:
     void Init(size_t num_layers, const std::vector<int> num_neurons,
@@ -33,9 +38,9 @@ class Network {
 
     void ReadConfig(const std::string& filename);
 
-    void Train();
+    std::vector<int> Train(const std::vector<DigitData>& digits);
 
-    void Test();
+    std::vector<int> Test(const std::vector<DigitData>& digits);
 
   private:
     size_t num_layers_;
