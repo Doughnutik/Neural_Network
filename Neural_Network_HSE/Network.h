@@ -1,20 +1,17 @@
 #pragma once
 #include "Layer.h"
+#include "MnistReader.h"
 #include <map>
 
 const std::map<std::string, std::pair<function, derivative>> func_names_map{
-  {"sigmoida", {SigmoidaFunc, SigmoidaDer}}, {"relu", {ReluFunc, ReluDer}}, {"th", {ThFunc, ThDer}}
-};
-
-struct DigitData {
-    std::vector<std::vector<double>> pixels;
-    int digit;
-};
+    {"sigmoida", {SigmoidaFunc, SigmoidaDer}},
+    {"relu", {ReluFunc, ReluDer}},
+    {"th", {ThFunc, ThDer}}};
 
 class Network {
   public:
     void Init(size_t num_layers, const std::vector<int> num_neurons,
-              const std::string& func_name, double rate);
+              const std::string &func_name, double rate);
 
     void PrintData();
 
@@ -30,17 +27,17 @@ class Network {
 
     void WeightUpdate();
 
-    void SaveData(const std::string& filename);
+    void SaveData(const std::string &filename);
 
-    void ReadData(const std::string& filename);
+    void ReadData(const std::string &filename);
 
-    void SaveConfig(const std::string& filename);
+    void SaveConfig(const std::string &filename);
 
-    void ReadConfig(const std::string& filename);
+    void ReadConfig(const std::string &filename);
 
-    std::vector<int> Train(const std::vector<DigitData>& digits);
+    void Train(const std::vector<DigitData> &digits);
 
-    std::vector<int> Test(const std::vector<DigitData>& digits);
+    std::vector<int> Test(const std::vector<DigitData> &digits);
 
   private:
     size_t num_layers_;

@@ -79,7 +79,7 @@ double Vector::operator*(const Vector &other) const {
     return res;
 }
 
-std::pair<int, double> Vector::FindMax() const{
+std::pair<int, double> Vector::FindMax() const {
     size_t id = std::max_element(vec_.begin(), vec_.end()) - vec_.begin();
     return {id, vec_[id]};
 }
