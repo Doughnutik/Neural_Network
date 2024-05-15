@@ -1,12 +1,13 @@
 #pragma once
 #include "Layer.h"
+#include "Functions.h"
 #include "MnistReader.h"
 #include <map>
 
 const std::map<std::string, std::pair<function, derivative>> func_names_map{
-    {"sigmoida", {sigmoida_func, sigmoida_der}},
-    {"relu", {relu_func, relu_der}},
-    {"th", {th_func, th_der}}};
+    {"sigmoida", {SigmoidaFunc, SigmoidaDer}},
+    {"relu", {ReluFunc, ReluDer}},
+    {"th", {ThFunc, ThDer}}};
 
 class Network {
   public:
@@ -21,7 +22,7 @@ class Network {
 
     int Search(const Vector &vec);
 
-    void PrintValues(size_t id);
+    void PrintNeurons(size_t id);
 
     void BackPropagate(int expect);
 

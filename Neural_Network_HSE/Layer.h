@@ -1,5 +1,4 @@
 #pragma once
-#include "Functions.h"
 #include "LinAlg.h"
 
 enum class Filling { Random, Zeroes };

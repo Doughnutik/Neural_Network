@@ -5,6 +5,7 @@ DESCRIPTION "Neurol Network for predicting digits"
 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
+set(ALLOW_DUPLICATE_CUSTOM_TARGETS TRUE)
 
 if ((CMAKE_CXX_COMPILER_ID MATCHES "Clang") OR (CMAKE_CXX_COMPILER_ID STREQUAL "GNU"))
     add_compile_options(
@@ -28,11 +29,11 @@ if ((CMAKE_CXX_COMPILER_ID MATCHES "Clang") OR (CMAKE_CXX_COMPILER_ID STREQUAL "
 endif()
 
 add_executable(network
-main.cpp
+Network.cpp
 Functions.cpp
 Layer.cpp
 LinAlg.cpp
 MnistReader.cpp
-Network.cpp)
+main.cpp)
 
 add_executable(convert ConvertMnistDataToTxt.cpp)

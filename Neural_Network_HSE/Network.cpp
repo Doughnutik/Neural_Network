@@ -34,14 +34,27 @@ void Network::Init(size_t num_layers, const std::vector<size_t> &num_neurons,
 
 void Network::PrintData() { // вывести количество нейронов на каждом слое
     std::cout << "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n";
-    std::cout << num_layers_ << "слоёв нейросети\n";
+    std::cout << num_layers_ << " слоёв нейросети\n";
     for (size_t i = 0; i < num_layers_; ++i) {
         std::cout << "На " << i << " слоё " << num_neurons_[i] << " нейронов\n";
     }
+
+    for (size_t i = 0; i < num_layers_ - 1; ++i) {
+        std::cout << "Размеры " << i << " слоя: " << layers_[i].GetSize().first
+                  << " " << layers_[i].GetSize().second << "\n";
+    }
+
+    for (size_t i = 0; i < num_layers_; ++i) {
+        std::cout << "Размеры массивов нейронов " << i
+                  << " слоя: " << neurons_values_[i].Size() << " "
+                  << neurons_errors_[i].Size() << " " << sum_values_[i].Size()
+                  << "\n";
+    }
+    std::cout << func_name_ << " " << learning_rate_ << "\n";
     std::cout << "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n";
 }
 
-void Network::PrintValues(size_t id) { // вывести значения нейронов на слое id
+void Network::PrintNeurons(size_t id) { // вывести значения нейронов на слое id
     std::cout << "$$$   Values   $$$\n";
     for (size_t i = 0; i < num_neurons_[id]; ++i) {
         std::cout << i << " " << neurons_values_[id][i] << "\n";
@@ -57,9 +70,9 @@ void Network::LoadData(const std::vector<double> &vec) {
 
 int Network::Propagate() { // функция прямого распространения
     for (size_t i = 1; i < num_layers_; ++i) {
-        sum_values_[i] =
-            (layers_[i - 1].GetWeights() * neurons_values_[i - 1]) +
-            layers_[i - 1].GetBias();               // Ax + b = z
+        sum_values_[i] = (layers_[i - 1].GetWeights() * neurons_values_[i - 1]);
+        // std::cerr << (layers_[i - 1].GetWeights() * neurons_values_[i - 1]).Size() << " " << sum_values_[i].Size() << " " << layers_[i - 1].GetBias().Size() << "\n";
+        sum_values_[i] += layers_[i - 1].GetBias();               // Ax + b = z
         neurons_values_[i] = func_(sum_values_[i]); // func(z)
     }
     std::pair<int, double> p = neurons_values_[num_layers_ - 1]
@@ -74,6 +87,7 @@ void Network::BackPropagate(int expect) {
     // b_j^l. Нейроны a_i^l. (l - номер слоя). Тогда z_i^l = w_0_i^{l-1} *
     // a_0^{l-1} + ... + w_k_i^{l-1} * a_k^{l-1} + b_i^{l-1}, a_i^l =
     // func(z_i^l), где k - кол-во нейронов на l-1 слое.
+    
     Vector expect_values(10);
     assert(expect >= 0 && expect <= 9);
     expect_values[static_cast<size_t>(expect)] = 1; // правильный вектор ответа
@@ -82,7 +96,8 @@ void Network::BackPropagate(int expect) {
         2; // посчитали dC / da^{l-1}
     sum_values_[num_layers_ - 1] =
         der_(sum_values_[num_layers_ - 1]); // z^{l-1} -> der(z^{l-1})
-    for (size_t l = num_layers_ - 2; l >= 0; --l) {
+    for (int ll = static_cast<int>(num_layers_) - 2; ll >= 0; --ll) {
+        size_t l = static_cast<size_t>(ll);
         sum_values_[l] = der_(sum_values_[l]); // z^l -> der(z^l)
         for (size_t b = 0; b < num_neurons_[l]; ++b) {
             neurons_errors_[l][b] = 0;
@@ -97,7 +112,8 @@ void Network::BackPropagate(int expect) {
         }
     }
 
-    for (size_t l = num_layers_ - 2; l >= 0; --l) {
+    for (int ll = static_cast<int>(num_layers_) - 2; ll >= 0; --ll) {
+        size_t l = static_cast<size_t>(ll);
         std::pair<size_t, size_t> sizes = layers_[l].GetSize();
         size_t rows = sizes.first, cols = sizes.second;
         for (size_t a = 0; a < rows; ++a) {
@@ -257,6 +273,7 @@ void Network::Train(const std::vector<DigitData> &digits) {
         for (size_t i = 0; i < n; ++i) {
             LoadData(digits[i].pixels);
             Propagate();
+            continue;
             BackPropagate(digits[i].digit);
         }
         learning_rate_ *= lambda;

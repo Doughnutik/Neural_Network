@@ -47,37 +47,49 @@ void Test(const std::string &data_file, const std::string &test_digits_file,
     std::vector<int> results = nw.Test(digits);
     std::cout << "Тестирование закончено\n";
 
-    for (size_t i = 0; i < n; ++i) {
-        std::cout << "Предсказано: " << results[i]
-                  << " Должно быть: " << digits[i].digit << "\n";
-    }
+    // for (size_t i = 0; i < n; ++i) {
+    //     std::cout << "Предсказано: " << results[i]
+    //               << " Должно быть: " << digits[i].digit << "\n";
+    // }
 
     std::cout << "Точность " << static_cast<double>(results.back()) / n << "\n";
 }
 
-int main(int argc, char *argv[]) {
-    if (argc != 5 && argc != 6) {
-        std::cout << "Неверное количество аргументов\n";
-        exit(0);
-    }
-    std::string process(argv[1]);
+int main() {
+    std::cout << "Введите, желаете ли обучить модель или протестировать "
+                 "(train, test)\n";
+    std::string process;
+    std::cin >> process;
+
     if (process != "train" && process != "test") {
-        std::cout << "Первый аргумент test или train\n";
+        std::cout << "Введите test или train\n";
         exit(0);
     }
     if (process == "train") { // training
-        if (argc != 5) {
-            std::cout << "Неверное количество аргументов\n";
+        std::cout
+            << "Введите, будете задавать config фалом или data фалом (c, d)\n";
+        char c;
+        std::cin >> c;
+        if (c != 'c' && c != 'd') {
+            std::cout << "Введите c или d\n";
             exit(0);
         }
-        if (strcmp(argv[2], "-c") && strcmp(argv[2], "-d")) {
-            std::cout << "В случае обучения, второй аргумент -c или -d\n";
-            exit(0);
-        }
-        std::string data_file(argv[3]);
-        std::string train_digits_file(argv[4]);
-        std::string train_labels_file(argv[5]);
-        if (!strcmp(argv[2], "-c")) { // config
+
+        std::cout << "Введите путь до файла (абсолютный или относительный)\n";
+        std::string data_file;
+        std::cin >> data_file;
+
+        std::cout << "Введите путь до файла с пикселями цифр (абсолютный или "
+                     "относительный)\n";
+        std::string train_digits_file;
+        std::cin >> train_digits_file;
+
+        std::cout << "Введите путь до файла с цифрами (абсолютный или "
+                     "относительный)\n";
+        std::string train_labels_file;
+        std::cin >> train_labels_file;
+
+        if (c == 'c') { // config
             Train(data_file, train_digits_file, train_labels_file,
                   FileType::Config);
         } else { // data
@@ -85,9 +97,19 @@ int main(int argc, char *argv[]) {
                   FileType::Data);
         }
     } else { // testing
-        std::string data_file(argv[2]);
-        std::string test_digits_file(argv[3]);
-        std::string test_labels_file(argv[4]);
+        std::cout << "Введите путь до файла (абсолютный или относительный)\n";
+        std::string data_file;
+        std::cin >> data_file;
+
+        std::cout << "Введите путь до файла с пикселями цифр (абсолютный или "
+                     "относительный)\n";
+        std::string test_digits_file;
+        std::cin >> test_digits_file;
+
+        std::cout << "Введите путь до файла с цифрами (абсолютный или "
+                     "относительный)\n";
+        std::string test_labels_file;
+        std::cin >> test_labels_file;
         Test(data_file, test_digits_file, test_labels_file);
     }
 }

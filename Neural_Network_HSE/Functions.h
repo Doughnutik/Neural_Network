@@ -14,11 +14,11 @@ Vector ReluDer(const Vector &vec);
 Vector ThFunc(const Vector &vec);
 Vector ThDer(const Vector &vec);
 
-function sigmoida_func = SigmoidaFunc;
-derivative sigmoida_der = SigmoidaDer;
+static function sigmoida_func = SigmoidaFunc;
+static derivative sigmoida_der = SigmoidaDer;
 
-function relu_func = ReluFunc;
-derivative relu_der = ReluDer;
+static function relu_func = ReluFunc;
+static derivative relu_der = ReluDer;
 
-function th_func = ThFunc;
-derivative th_der = ThDer;
+static function th_func = ThFunc;
+static derivative th_der = ThDer;

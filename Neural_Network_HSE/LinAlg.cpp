@@ -4,7 +4,7 @@
 #include <fstream>
 #include <random>
 
-std::normal_distribution<double> distribution(1, 0);
+std::normal_distribution<double> distribution(1, 0);  // можно менять генератор чисел
 std::mt19937 gen(43);
 
 Vector::Vector(size_t size) { Init(size); }
@@ -16,7 +16,10 @@ Vector::Vector(const std::vector<double> &vec) {
     }
 }
 
-void Vector::Init(size_t size) { vec_.assign(size, 0); }
+void Vector::Init(size_t size) {
+    vec_.assign(size, 0);
+    size_ = size;
+}
 
 void Vector::RandomFill() {
     for (size_t i = 0; i < size_; ++i) {
@@ -80,7 +83,8 @@ double Vector::operator*(const Vector &other) const {
 }
 
 std::pair<int, double> Vector::FindMax() const {
-    int id = static_cast<int>(std::max_element(vec_.begin(), vec_.end()) - vec_.begin());
+    int id = static_cast<int>(std::max_element(vec_.begin(), vec_.end()) -
+                              vec_.begin());
     return {id, vec_[static_cast<size_t>(id)]};
 }
 
@@ -155,7 +159,7 @@ Matrix Matrix::operator*(double value) const {
 
 Vector Matrix::operator*(const Vector &other) const {
     assert(cols_ == other.Size());
-    Vector new_vector(cols_);
+    Vector new_vector(rows_);
     for (size_t i = 0; i < rows_; ++i) {
         new_vector[i] = matrix_[i] * other;
     }
