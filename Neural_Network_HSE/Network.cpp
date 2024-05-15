@@ -1,15 +1,16 @@
 #include "Network.h"
 
+#include <cassert>
 #include <chrono>
 #include <fstream>
 #include <iostream>
 
-void Network::Init(size_t num_layers, const std::vector<int> num_neurons,
+void Network::Init(size_t num_layers, const std::vector<size_t> &num_neurons,
                    const std::string &func_name, double rate) {
     num_layers_ = num_layers;
     num_neurons_ = num_neurons;
     layers_.resize(num_layers - 1, Layer());
-    for (int i = 0; i < num_layers - 1; ++i) {
+    for (size_t i = 0; i < num_layers - 1; ++i) {
         layers_[i].Init(num_neurons[i + 1], num_neurons[i], Filling::Random);
     }
 
@@ -17,7 +18,7 @@ void Network::Init(size_t num_layers, const std::vector<int> num_neurons,
     neurons_errors_.resize(num_layers, Vector());
     sum_values_.resize(num_layers, Vector());
 
-    for (int i = 0; i < num_layers; ++i) {
+    for (size_t i = 0; i < num_layers; ++i) {
         neurons_values_[i].Init(num_neurons[i]);
         neurons_errors_[i].Init(num_neurons[i]);
         if (i) { // на 0 слое не нужны суммы нейронов
@@ -74,14 +75,14 @@ void Network::BackPropagate(int expect) {
     // a_0^{l-1} + ... + w_k_i^{l-1} * a_k^{l-1} + b_i^{l-1}, a_i^l =
     // func(z_i^l), где k - кол-во нейронов на l-1 слое.
     Vector expect_values(10);
-    expect_values[expect] = 1; // правильный вектор ответа
+    assert(expect >= 0 && expect <= 9);
+    expect_values[static_cast<size_t>(expect)] = 1; // правильный вектор ответа
     neurons_errors_[num_layers_ - 1] =
         (neurons_values_[num_layers_ - 1] - expect_values) *
         2; // посчитали dC / da^{l-1}
     sum_values_[num_layers_ - 1] =
         der_(sum_values_[num_layers_ - 1]); // z^{l-1} -> der(z^{l-1})
-    for (int l = num_layers_ - 2; l >= 0; --l) {
-        size_t n = num_neurons_[l];
+    for (size_t l = num_layers_ - 2; l >= 0; --l) {
         sum_values_[l] = der_(sum_values_[l]); // z^l -> der(z^l)
         for (size_t b = 0; b < num_neurons_[l]; ++b) {
             neurons_errors_[l][b] = 0;
@@ -96,7 +97,7 @@ void Network::BackPropagate(int expect) {
         }
     }
 
-    for (int l = num_layers_ - 2; l >= 0; --l) {
+    for (size_t l = num_layers_ - 2; l >= 0; --l) {
         std::pair<size_t, size_t> sizes = layers_[l].GetSize();
         size_t rows = sizes.first, cols = sizes.second;
         for (size_t a = 0; a < rows; ++a) {
@@ -134,11 +135,11 @@ void Network::SaveData(
         fout << num_neurons_[i] << " "; // сохраняем количества нейронов
     }
     fout << "\n";
-    for (int i = 0; i < num_layers_ - 1; ++i) {
+    for (size_t i = 0; i < num_layers_ - 1; ++i) {
         fout << layers_[i].GetWeights() << "\n"; // сохраняем матрицы весов
     }
 
-    for (int i = 0; i < num_layers_ - 1; ++i) {
+    for (size_t i = 0; i < num_layers_ - 1; ++i) {
         fout << layers_[i].GetBias() << "\n"; // сохраняем вектора сдвигов
     }
     fout << func_name_ << "\n"; // сохраняем название функции активации
@@ -165,14 +166,14 @@ void Network::ReadData(
     for (size_t i = 0; i < num_layers_; ++i) {
         fin >> num_neurons_[i]; // читаем количества нейронов
     }
-    for (int i = 0; i < num_layers_ - 1; ++i) {
+    for (size_t i = 0; i < num_layers_ - 1; ++i) {
         layers_[i].Init(num_neurons_[i + 1], num_neurons_[i], Filling::Zeroes);
     }
 
-    for (int i = 0; i < num_layers_ - 1; ++i) {
+    for (size_t i = 0; i < num_layers_ - 1; ++i) {
         fin >> layers_[i].ChangeWeights(); // читаем матрицы весов
     }
-    for (int i = 0; i < num_layers_ - 1; ++i) {
+    for (size_t i = 0; i < num_layers_ - 1; ++i) {
         fin >> layers_[i].ChangeBias(); // читаем вектора сдвигов
     }
 
@@ -185,7 +186,7 @@ void Network::ReadData(
     neurons_errors_.resize(num_layers_, Vector());
     sum_values_.resize(num_layers_, Vector());
 
-    for (int i = 0; i < num_layers_; ++i) {
+    for (size_t i = 0; i < num_layers_; ++i) {
         neurons_values_[i].Init(num_neurons_[i]);
         neurons_errors_[i].Init(num_neurons_[i]);
         if (i) { // на 0 слое не нужны суммы нейронов
@@ -207,7 +208,7 @@ void Network::ReadConfig(const std::string &filename) {
         return;
     }
     size_t num_layers;
-    std::vector<int> num_neurons;
+    std::vector<size_t> num_neurons;
     std::string func_name;
     double rate;
 
@@ -249,19 +250,19 @@ void Network::Train(const std::vector<DigitData> &digits) {
     size_t n = digits.size();
     PrintData();
     double rate = learning_rate_;
-    double lambda = exp(-1 / epoch);
+    double lambda = exp(-1. / epoch);
 
     auto begin_time = std::chrono::steady_clock::now();
     for (size_t e = 1; e <= epoch; ++e) {
         for (size_t i = 0; i < n; ++i) {
             LoadData(digits[i].pixels);
-            int predict = Propagate(); // здесь не нужен
+            Propagate();
             BackPropagate(digits[i].digit);
         }
         learning_rate_ *= lambda;
-        auto cur_time = std::chrono::steady_clock::now();
-        std::cout << "Пошло " << e << " эпох. Затрачено "
-                  << cur_time - begin_time << " времени\n";
+        auto diff = std::chrono::steady_clock::now() - begin_time;
+        std::cout << "Пошло " << e << " эпох. Затрачено " << diff.count() / 60.
+                  << " минут\n";
     }
     learning_rate_ = rate;
 }

@@ -1,5 +1,5 @@
 #pragma once
-#include "Linalg.h"
+#include "LinAlg.h"
 #include <functional>
 
 using function = std::function<Vector(const Vector &)>;
@@ -18,7 +18,7 @@ function sigmoida_func = SigmoidaFunc;
 derivative sigmoida_der = SigmoidaDer;
 
 function relu_func = ReluFunc;
-derivative rule_der = ReluDer;
+derivative relu_der = ReluDer;
 
 function th_func = ThFunc;
 derivative th_der = ThDer;

@@ -80,8 +80,8 @@ double Vector::operator*(const Vector &other) const {
 }
 
 std::pair<int, double> Vector::FindMax() const {
-    size_t id = std::max_element(vec_.begin(), vec_.end()) - vec_.begin();
-    return {id, vec_[id]};
+    int id = static_cast<int>(std::max_element(vec_.begin(), vec_.end()) - vec_.begin());
+    return {id, vec_[static_cast<size_t>(id)]};
 }
 
 Matrix::Matrix(size_t rows, size_t cols) { Init(rows, cols); }

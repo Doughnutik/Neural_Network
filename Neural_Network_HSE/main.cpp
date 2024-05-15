@@ -19,7 +19,6 @@ void Train(const std::string &data_file, const std::string &train_digits_file,
         ReadDigits(train_digits_file); // считываем цифры
     ReadLabels(train_labels_file, digits);
 
-    int n = digits.size();
     std::cout << "Начинаем обучение\n";
     nw.Train(digits);
     std::cout << "Обучение закончено\n";
@@ -43,17 +42,17 @@ void Test(const std::string &data_file, const std::string &test_digits_file,
         ReadDigits(test_digits_file); // считываем цифры
     ReadLabels(test_labels_file, digits);
 
-    int n = digits.size();
+    size_t n = digits.size();
     std::cout << "Начинаем тестирование\n";
     std::vector<int> results = nw.Test(digits);
     std::cout << "Тестирование закончено\n";
 
-    for (int i = 0; i < n - 1; ++i) {
+    for (size_t i = 0; i < n; ++i) {
         std::cout << "Предсказано: " << results[i]
                   << " Должно быть: " << digits[i].digit << "\n";
     }
 
-    std::cout << "Точность " << results.back() / n << "\n";
+    std::cout << "Точность " << static_cast<double>(results.back()) / n << "\n";
 }
 
 int main(int argc, char *argv[]) {
@@ -71,14 +70,14 @@ int main(int argc, char *argv[]) {
             std::cout << "Неверное количество аргументов\n";
             exit(0);
         }
-        if (argv[2] != "-c" && argv[2] != "-d") {
+        if (strcmp(argv[2], "-c") && strcmp(argv[2], "-d")) {
             std::cout << "В случае обучения, второй аргумент -c или -d\n";
             exit(0);
         }
         std::string data_file(argv[3]);
         std::string train_digits_file(argv[4]);
         std::string train_labels_file(argv[5]);
-        if (argv[2] == "-c") { // config
+        if (!strcmp(argv[2], "-c")) { // config
             Train(data_file, train_digits_file, train_labels_file,
                   FileType::Config);
         } else { // data

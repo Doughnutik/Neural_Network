@@ -4,13 +4,13 @@
 #include <map>
 
 const std::map<std::string, std::pair<function, derivative>> func_names_map{
-    {"sigmoida", {SigmoidaFunc, SigmoidaDer}},
-    {"relu", {ReluFunc, ReluDer}},
-    {"th", {ThFunc, ThDer}}};
+    {"sigmoida", {sigmoida_func, sigmoida_der}},
+    {"relu", {relu_func, relu_der}},
+    {"th", {th_func, th_der}}};
 
 class Network {
   public:
-    void Init(size_t num_layers, const std::vector<int> num_neurons,
+    void Init(size_t num_layers, const std::vector<size_t>& num_neurons,
               const std::string &func_name, double rate);
 
     void PrintData();
@@ -41,7 +41,7 @@ class Network {
 
   private:
     size_t num_layers_;
-    std::vector<int> num_neurons_;
+    std::vector<size_t> num_neurons_;
     std::vector<Layer> layers_;
     std::vector<Vector> neurons_values_, neurons_errors_, sum_values_;
     function func_;

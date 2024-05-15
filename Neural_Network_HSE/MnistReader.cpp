@@ -7,11 +7,11 @@ std::vector<DigitData> ReadDigits(const std::string &filename) {
         std::cout << "Error openning the  " << filename
                   << " digits file for reading digits\n";
         system("pause");
-        return;
+        return {};
     }
-    int size;
+    size_t size;
     fin >> size;
-    int n, m;
+    size_t n, m;
     fin >> n >> m;
     std::vector<DigitData> digits(size);
 
@@ -38,7 +38,7 @@ void ReadLabels(const std::string &filename, std::vector<DigitData> &digits) {
         system("pause");
         return;
     }
-    int size;
+    size_t size;
     fin >> size;
     for (size_t i = 0; i < size; ++i) {
         fin >> digits[i].digit;
