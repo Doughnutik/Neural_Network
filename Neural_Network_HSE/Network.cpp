@@ -32,6 +32,22 @@ void Network::Init(size_t num_layers, const std::vector<size_t> &num_neurons,
     func_name_ = func_name;
 }
 
+void Network::Reset() {
+    for (size_t i = 0; i < num_layers_ - 1; ++i) {
+        layers_[i].Reset();
+    }
+}
+
+void Network::ApplyDeltas(size_t n) {
+    for (size_t i = 0; i < num_layers_ - 1; ++i) {
+        layers_[i].ChangeWeightErrors() *= (learning_rate_ / n);
+        layers_[i].ChangeWeights() -= layers_[i].GetWeightErrors();
+
+        layers_[i].ChangeBiasErrors() *= (learning_rate_ / n);
+        layers_[i].ChangeBias() -= layers_[i].GetBiasErrors();
+    }
+}
+
 void Network::PrintData() { // вывести количество нейронов на каждом слое
     std::cout << "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$\n";
     std::cout << num_layers_ << " слоёв нейросети\n";
@@ -71,8 +87,7 @@ void Network::LoadData(const std::vector<double> &vec) {
 int Network::Propagate() { // функция прямого распространения
     for (size_t i = 1; i < num_layers_; ++i) {
         sum_values_[i] = (layers_[i - 1].GetWeights() * neurons_values_[i - 1]);
-        // std::cerr << (layers_[i - 1].GetWeights() * neurons_values_[i - 1]).Size() << " " << sum_values_[i].Size() << " " << layers_[i - 1].GetBias().Size() << "\n";
-        sum_values_[i] += layers_[i - 1].GetBias();               // Ax + b = z
+        sum_values_[i] += layers_[i - 1].GetBias(); // Ax + b = z
         neurons_values_[i] = func_(sum_values_[i]); // func(z)
     }
     std::pair<int, double> p = neurons_values_[num_layers_ - 1]
@@ -87,7 +102,7 @@ void Network::BackPropagate(int expect) {
     // b_j^l. Нейроны a_i^l. (l - номер слоя). Тогда z_i^l = w_0_i^{l-1} *
     // a_0^{l-1} + ... + w_k_i^{l-1} * a_k^{l-1} + b_i^{l-1}, a_i^l =
     // func(z_i^l), где k - кол-во нейронов на l-1 слое.
-    
+
     Vector expect_values(10);
     assert(expect >= 0 && expect <= 9);
     expect_values[static_cast<size_t>(expect)] = 1; // правильный вектор ответа
@@ -101,34 +116,38 @@ void Network::BackPropagate(int expect) {
         sum_values_[l] = der_(sum_values_[l]); // z^l -> der(z^l)
         for (size_t b = 0; b < num_neurons_[l]; ++b) {
             neurons_errors_[l][b] = 0;
-            for (size_t k = 0; k < num_neurons_[l + 1]; ++k) {
+        }
+        for (size_t k = 0; k < num_neurons_[l + 1]; ++k) {
+            for (size_t b = 0; b < num_neurons_[l]; ++b) {
                 neurons_errors_[l][b] +=
                     neurons_errors_[l + 1][k] * sum_values_[l + 1][k] *
-                    layers_[l].GetWeights()[b][k]; // посчитали ошибки нейронов
+                    layers_[l].GetWeights()[k][b]; // посчитали ошибки нейронов
                 // dC / da_b^l = sum_k dC / da_k^{l+1} * da_k^{l+1} / dz_k^{l+1}
                 // * dz_k^{l+1} / da_b^l = = sum_k dC / da_k^{l+1} * da_k^{l+1}
-                // * der(z_k^{l+1}) * w_b_k^l
+                // * der(z_k^{l+1}) * w_b_k^l. Заметим, что матрица весов
+                // транспонируется
             }
         }
     }
 
+    // return;
     for (int ll = static_cast<int>(num_layers_) - 2; ll >= 0; --ll) {
         size_t l = static_cast<size_t>(ll);
         std::pair<size_t, size_t> sizes = layers_[l].GetSize();
         size_t rows = sizes.first, cols = sizes.second;
         for (size_t a = 0; a < rows; ++a) {
             for (size_t b = 0; b < cols; ++b) {
-                double delta_w = neurons_errors_[l + 1][b] *
-                                 sum_values_[l + 1][b] * neurons_values_[l][a];
-                layers_[l].ChangeWeights()[a][b] -= delta_w * learning_rate_;
+                double delta_w = neurons_errors_[l + 1][a] *
+                                 sum_values_[l + 1][a] * neurons_values_[l][b];
+                layers_[l].ChangeWeightErrors()[a][b] += delta_w;
             }
             double delta_b = neurons_errors_[l + 1][a] * sum_values_[l + 1][a];
-            layers_[l].ChangeBias()[a] -= delta_b * learning_rate_;
+            layers_[l].ChangeBiasErrors()[a] += delta_b;
             // посчитали изменения весов
             // dC / dw_a_b^l = dC / da_b^{l+1} * da_b^{l+1} / dz_b^{l+1} *
             // dz_b^{l+1} / dw_a_b^l = dC / da_b^{l+1} * der(z_b^{l+1}) * a_a^l
-            // dC / db_a^l = dC / da_b^{l+1} * da_b^{l+1} / dz_b^{l+1} *
-            // dz_b^{l+1} / db_a^l = dC / da_b^{l+1} * der(z_b^{l+1}) * 1
+            // dC / db_a^l = dC / da_a^{l+1} * da_a^{l+1} / dz_a^{l+1} *
+            // dz_a^{l+1} / db_a^l = dC / da_a^{l+1} * der(z_a^{l+1}) * 1
             // w_a_b^l = w_a_b^l - dC / dw_a_b^l * learning_rate
             // b_a^l = b_a^l - dC / db_a^l * learning_rate
         }
@@ -273,13 +292,16 @@ void Network::Train(const std::vector<DigitData> &digits) {
         for (size_t i = 0; i < n; ++i) {
             LoadData(digits[i].pixels);
             Propagate();
-            continue;
             BackPropagate(digits[i].digit);
         }
-        learning_rate_ *= lambda;
         auto diff = std::chrono::steady_clock::now() - begin_time;
-        std::cout << "Пошло " << e << " эпох. Затрачено " << diff.count() / 60.
-                  << " минут\n";
+        std::cout
+            << "Прошло " << e << " эпох. Затрачено "
+            << std::chrono::duration_cast<std::chrono::seconds>(diff).count()
+            << " секунд\n";
+        ApplyDeltas(n);
+        Reset();
+        learning_rate_ *= lambda;
     }
     learning_rate_ = rate;
 }
@@ -301,5 +323,3 @@ std::vector<int> Network::Test(const std::vector<DigitData> &digits) {
     results[n] = cnt;
     return results;
 }
-
-// TODO добавить learning rate в backpropagation

@@ -3,8 +3,9 @@
 #include <cassert>
 #include <fstream>
 #include <random>
+#include <iostream>
 
-std::normal_distribution<double> distribution(1, 0);  // можно менять генератор чисел
+std::normal_distribution<double> distribution(0, 0.5);  // можно менять генератор чисел
 std::mt19937 gen(43);
 
 Vector::Vector(size_t size) { Init(size); }
@@ -24,6 +25,7 @@ void Vector::Init(size_t size) {
 void Vector::RandomFill() {
     for (size_t i = 0; i < size_; ++i) {
         vec_[i] = distribution(gen); // тут можно менять рандом
+        // std::cerr << vec_[i] << " ";
     }
 }
 

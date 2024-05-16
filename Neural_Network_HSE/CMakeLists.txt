@@ -25,6 +25,7 @@ if ((CMAKE_CXX_COMPILER_ID MATCHES "Clang") OR (CMAKE_CXX_COMPILER_ID STREQUAL "
         -Wredundant-decls
         -Wsign-conversion
         -Wsign-promo
+        -O3
     )
 endif()
 

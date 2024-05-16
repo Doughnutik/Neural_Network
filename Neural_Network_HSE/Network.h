@@ -14,19 +14,19 @@ class Network {
     void Init(size_t num_layers, const std::vector<size_t>& num_neurons,
               const std::string &func_name, double rate);
 
+    void Reset();
+
+    void ApplyDeltas(size_t n);
+
     void PrintData();
 
     void LoadData(const std::vector<double> &vec);
 
     int Propagate();
 
-    int Search(const Vector &vec);
-
     void PrintNeurons(size_t id);
 
     void BackPropagate(int expect);
-
-    void WeightUpdate();
 
     void SaveData(const std::string &filename);
 
