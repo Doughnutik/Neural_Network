@@ -289,17 +289,23 @@ void Network::Train(const std::vector<DigitData> &digits) {
 
     auto begin_time = std::chrono::steady_clock::now();
     for (size_t e = 1; e <= epoch; ++e) {
+        size_t right = 0;
         for (size_t i = 0; i < n; ++i) {
             LoadData(digits[i].pixels);
-            Propagate();
-            BackPropagate(digits[i].digit);
+            int predict = Propagate();
+            if (predict == digits[i].digit) {
+                ++right;
+            }
+            else {
+                BackPropagate(digits[i].digit);
+            }
         }
         auto diff = std::chrono::steady_clock::now() - begin_time;
         std::cout
             << "Прошло " << e << " эпох. Затрачено "
             << std::chrono::duration_cast<std::chrono::seconds>(diff).count()
             << " секунд\n";
-        ApplyDeltas(n);
+        ApplyDeltas(n - right);
         Reset();
         learning_rate_ *= lambda;
     }
